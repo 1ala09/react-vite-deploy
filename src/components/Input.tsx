@@ -1,81 +1,120 @@
-import "../App.css";
+import "./Input.css";
 
 interface InputProps {
-  type?: "text" | "number" | "email" | "password" | "email";
-  value?: string | number;
-  name?: string;
-  placeholder?: string;
-  id?: string;
-  defaultValue?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit?: () => void;
-  onBlur?: () => void;
-  onFocus?: () => void;
-  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  className?: string;
-  style?: React.CSSProperties;
-  disabled?: boolean;
-  readOnly?: boolean;
-  autoFocus?: boolean;
-  size?: string | number;
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  min?: number;
-  max?: number;
-  pattern?: string;
-  title?: string;
-  "aria-label"?: string;
-  "aria-describedby"?: string;
-  role?: string;
-  tabIndex?: number;
-  autoComplete?: "on" | "off";
-  spellCheck?: boolean;
-  inputMode?:
+  type:
     | "text"
-    | "numeric"
-    | "decimal"
-    | "tel"
     | "email"
+    | "password"
+    | "tel"
     | "url"
+    | "checkbox"
+    | "radio"
+    | "file"
+    | "date"
+    | "time"
     | "search"
-    | "none";
-  list?: string;
-  form?: string;
-  label?: string;
-  icon?: React.ReactNode;
-  error?: string | boolean;
-  helperText?: string;
-  variant?: "outlined" | "filled" | "standard";
-  fullWidth?: boolean;
-  multiline?: boolean;
-  mainInputRef?: React.Ref<HTMLInputElement>;
+    | "color"
+    | "image"
+    | "hidden"
+    | "submit"
+    | "reset"
+    | "button";
+  value?: string | number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  name?: string;
+  id?: string;
+  className?: string;
+  relativeclassName?: string;
+  disabled?: boolean;
+  required?: boolean;
+  defaultValue?: string;
+  style?: React.CSSProperties;
+  title?: React.ReactNode;
+  helperText?: React.ReactNode;
+  error?: React.ReactNode;
+  lefticon?: React.ReactNode;
+  lefticonclassName?: string;
+  righticonclassName?: string;
+  tooltipclassName?: string;
+  righticon?: React.ReactNode;
+  min?: string | number;
+  max?: string | number;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  invisibleTitle?: boolean;
+  checked?: boolean;
 }
 
 const Input = ({
   type,
-  placeholder,
   value,
-  readOnly,
   onChange,
-  onSubmit,
   onKeyDown,
+  onMouseEnter,
+  onMouseLeave,
+  placeholder,
+  name,
+  id,
   className,
-  mainInputRef,
+  relativeclassName,
+  lefticonclassName,
+  righticonclassName,
+  tooltipclassName,
+  disabled,
+  required,
+  defaultValue,
+  style,
+  title,
+  invisibleTitle,
+  helperText,
+  error,
+  lefticon,
+  righticon,
+  min,
+  max,
+  checked,
 }: InputProps) => {
   return (
-    <input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      onSubmit={onSubmit}
-      readOnly={readOnly}
-      className={className}
-      onKeyDown={onKeyDown}
-      ref={mainInputRef}
-    />
+    <>
+      <span className={`relative ${relativeclassName}`}>
+        {lefticon && (
+          <span className={`left-icon ${lefticonclassName}`}>{lefticon}</span>
+        )}
+        <input
+          type={type}
+          checked={checked}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          placeholder={placeholder}
+          name={name}
+          id={id}
+          className={`input-component ${className} ${
+            error ? "input-error" : ""
+          }`}
+          value={value}
+          disabled={disabled}
+          required={required}
+          defaultValue={defaultValue}
+          style={style}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          min={min}
+          max={max}
+        />
+        {righticon && (
+          <span className={`right-icon ${righticonclassName}`}>
+            {righticon}
+          </span>
+        )}
+      </span>
+      {invisibleTitle && (
+        <span className={`tool-tip ${tooltipclassName}`}>{title}</span>
+      )}
+      <br />
+      {helperText && <span>{helperText}</span>}
+    </>
   );
 };
 

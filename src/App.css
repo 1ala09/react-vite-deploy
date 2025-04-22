@@ -1,153 +1,31 @@
 *{
-  background-color: #483D8B;
-  box-sizing: border-box;
-}
+    text-align: center;
+    box-sizing:border-box;
 
-.typeTodo{
-  background-color: white;
-  border: 2px solid black;
-  width: 500px;
-  height: 50px;
-  border-radius: 5px;
-  padding: 10px;
-}
-.addBtn{
-  background-color: green;
-  border: 1px solid black;
-  border-radius: 5px;
-  height: 50px;
-  width: 50px;
-  color: white;
-}
-
-.input-addButton{
-  display: flex;
-  justify-content: center;
-  margin-top: 50px;
-}
-
-.input-delete-edit-completeButton{
-  display: flex;
-  justify-content: center;
-  margin: 40px;
-  position: relative;
-
-}
-
-.addedTodo{
-  background-color: white;
-  border: 2px solid black;
-  width: 650px;
-  height: 70px;
-  border-radius: 5px;
-  padding: 10px;
-  position: absolute;
-  z-index: 0;
-}
-.completed-style{
-  background-color: white;
-  opacity: 0.8;
-  border: 2px solid black;
-  width: 650px;
-  height: 70px;
-  border-radius: 5px;
-  padding: 10px;
-  position: absolute;
-  z-index: 0;
-  color: grey;
-  text-decoration: line-through;
-}
-
-.deleteBtn{
-  background-color: red;
-  color: white;
-  height: 30px;
-  width: auto;
-  border: none;
-  border-radius: 5px;
-  z-index: 1;
-  /* position: absolute; */
-  /* right: 300px; */
-}
-
-.editBtn{
-  background-color: lightblue;
-  color: white;
-  height: 30px;
-  width: auto;
-  border: none;
-  border-radius: 5px;
-  z-index: 1;
-  /* position: absolute; */
-  /* right: 300px; */
-}
-
-.completeBtn{
-  background-color: lightblue;
-  color: white;
-  height: 30px;
-  width: auto;
-  border: none;
-  border-radius: 5px;
-  z-index: 1;
-  /* position: absolute; */
-  /* right: 300px; */
-}
-
-.delete-edit-completeBtn{
-  background-color: white; 
-  z-index: 1;
-  display: flex;
-  gap: 0.5rem;
-  position: absolute;
-  top: 20px;
-  left: 445px;
-  bottom: 20px;
-  width: fit-content;
-}
-
-.todo-Container{  
-  display: flex;
-  gap: 27.5rem;
-}
-
-.pendingTodo{
-  position: relative;
-  background-color: transparent;
-}
-
-.pending-todos{
-  display: flex;
-  flex-direction: column;
-  margin: 20px;
-  gap: 80px;
-}
-.completed-todos{
-  display: flex;
-  flex-direction: column;
-  margin: 20px;
-  gap: 80px;
-}
-
-.completedTodo{
-  position: relative;
-  background-color: transparent;
 }
 
 .title{
-  text-align: center;
-  color: black;
+    margin-top: 50px;
 }
 
-.modal-content {
-  background-color: white;
+.to-do-list {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
 }
 
-.modal-body {
-  background-color: white;
-  color: black;
+.added-todo{
+    display: flex;
+    justify-self: center;
 }
 
-.modal.show.d-block{
-  background: rgba(0, 0, 0, 0.5);
+
+.added-todo-container1{
+    margin: 5px;
+    list-style: none;
+}
+
+
+.text{
+    flex: 1;
 }

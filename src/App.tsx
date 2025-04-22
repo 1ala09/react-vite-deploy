@@ -1,250 +1,203 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { useState } from "react";
+import Input from "./components/Input";
 import "./App.css";
 import Button from "./components/Button";
-import Input from "./components/Input";
-import List from "./components/List";
-import Alert from "./components/Alert";
-import Modal from "./components/Modal";
 
-let idCounter = 0;
-function App() {
-  const [inputValue, setInputValue] = useState("");
+const App = () => {
+  //state for input change
+  const [inputVisibility, setInputVisibility] = useState("");
 
-  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>();
+  //interface for state
+  interface taskProp {
+    id: number;
+    text: string;
+    completed: boolean;
+    Disabled: boolean;
+  }
 
-  const [showCompletedTodo, setShowCompletedTodo] = useState<
-    { id: number; text: string; readOnly: boolean }[]
-  >([]);
+  //state for list
+  const [tasks, setTask] = useState<taskProp[]>([]);
 
-  const [showModal, setShowModal] = useState(false);
+  //add a todo
+  const handleAddTodo = () => {
+    if (inputVisibility.trim() !== "") {
+      const newTasks = {
+        id: Date.now() /*gives each object its own unique id but with date.now() is literarily 
+        a clock timestamp,this displays miliseconds right under the hood, and so each array on "add" 
+        takes its own ms, which cant be reset*/,
 
-  const [todoVisibility, setTodoVisibility] = useState<
-    { id: number; text: string; readOnly: boolean }[]
-  >([]);
-
-  const [show, setShow] = useState(false);
-
-  const refs = useRef<{ [key: number]: HTMLInputElement | null }>({});
-
-  const handleEdit = (id: number) => {
-    setTodoVisibility(
-      todoVisibility.map((todo) =>
-        todo.id === id ? { ...todo, readOnly: !todo.readOnly } : todo
-      )
-    );
-
-    setTimeout(() => {
-      refs.current[id]?.focus();
-    }, 0);
-  };
-
-  const handleClickOutside = (id: number) => {
-    setTimeout(() => {
-      setTodoVisibility(
-        todoVisibility.map((todo) =>
-          todo.id === id ? { ...todo, readOnly: true } : todo
-        )
-      );
-    }, 100);
-  };
-
-  const handleDelete = (id: number) => {
-    setPendingDeleteId(id);
-    setShowModal(true);
-  };
-
-  const confirmDelete = () => {
-    if (pendingDeleteId !== null) {
-      setTodoVisibility(
-        todoVisibility.filter((item) => item.id !== pendingDeleteId)
-      );
-      setShowCompletedTodo(
-        showCompletedTodo.filter((t) => t.id !== pendingDeleteId)
-      );
-
-      setPendingDeleteId(null);
-      setShowModal(false);
-    }
-  };
-
-  const handleInputValue = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == "Enter") {
-      e.preventDefault();
-      handleAppendTodo();
-    }
-  };
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleCloseAlert = () => {
-    setShow(false);
-    inputRef.current?.focus();
-  };
-
-  const handleAppendTodo = () => {
-    if (inputRef.current?.value.trim() === "") {
-      setShow(true);
-      inputRef.current?.blur();
-      return;
-    } else {
-      const newTodo = {
-        id: idCounter++,
-        text: inputValue,
-        readOnly: true,
+        text: inputVisibility,
         completed: false,
+        Disabled: true,
       };
-
-      setTodoVisibility([...todoVisibility, newTodo]);
-      setInputValue("");
+      setTask([...tasks, newTasks]);
+      setInputVisibility("");
     }
   };
 
-  const handleCompletedTodo = (id: number) => {
-    const completed = todoVisibility.find((element) => element.id === id);
-    if (completed) {
-      setTodoVisibility(todoVisibility.filter((element) => element.id !== id));
-      setShowCompletedTodo([...showCompletedTodo, completed]);
-    }
+  //enter a todo
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputVisibility(event.target.value);
   };
 
-  const handleUndoTodo = (id: number) => {
-    const todo = showCompletedTodo.find((t) => t.id === id);
-    if (todo) {
-      setShowCompletedTodo(showCompletedTodo.filter((t) => t.id !== id));
-      setTodoVisibility([...todoVisibility, todo]);
+  //separating pending todo
+  const pendingTodo = tasks.filter((task) => {
+    if (task.completed === false) {
+      return true;
+    } else {
+      return false;
     }
+  });
+
+  //separating completed todo
+  const completedTodo = tasks.filter((task) => {
+    if (task.completed === true) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  //function for toggling completed todo
+  const toggleCompleted = (index: number) => {
+    const updatedTask = tasks.map((task) =>
+      task.id == index ? { ...task, completed: !task.completed } : task
+    );
+    setTask(updatedTask);
   };
 
+  //function for toggling edited todo
+  const toggleEdit = (index: number) => {
+    const updatedTask = tasks.map((task) =>
+      task.id === index ? { ...task, Disabled: !task.Disabled } : task
+    );
+    setTask(updatedTask);
+  };
+
+  //deleting todo
+  const handleDelete = (index: number) => {
+    const updatedTask = tasks.filter((task) => task.id !== index);
+    setTask(updatedTask);
+  };
+
+  //making added todo editable onchange
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const updatedTask = tasks.map((task) =>
+      task.id === index ? { ...task, text: e.target.value } : task
+    );
+    setTask(updatedTask);
+  };
   return (
-    <div>
-      {show && (
-        <Alert type="info" closable onClose={handleCloseAlert}>
-          Please Enter a Todo!
-        </Alert>
-      )}
-      {showModal && (
-        <>
-          <Modal
-            body="Are you sure you want to delete?"
-            yesText="yes"
-            noText="no"
-            onNo={() => {
-              setShowModal(false);
-            }}
-            onYes={confirmDelete}
-          ></Modal>
-        </>
-      )}
-      <div style={{ pointerEvents: show ? "none" : "auto" }}>
-        <p></p>
-        <h1 className="title">TODO LIST</h1>
-        <div className="input-addButton">
-          <Input
-            type="text"
-            placeholder="Enter a Task"
-            value={inputValue}
-            onChange={handleInputValue}
-            className="typeTodo"
-            onKeyDown={handleOnKeyDown}
-            mainInputRef={inputRef}
-          />
-          <Button variant="add" onClick={handleAppendTodo}>
-            add
-          </Button>
-        </div>
-        <div className="todo-Container">
-          <div className="pending-todos">
-            {todoVisibility.length >= 1 ? (
-              <h4 style={{ color: "black" }}>
-                Pending Todos ({todoVisibility.length})
-              </h4>
-            ) : null}
-            {todoVisibility.map((todo) => (
-              <div key={todo.id} className="pendingTodo">
-                {todo.readOnly ? (
-                  <List
-                    value={todo.text}
-                    readOnly={todo.readOnly}
-                    className="addedTodo"
-                  />
-                ) : (
-                  <List
-                    type="text"
-                    value={todo.text}
-                    className="addedTodo"
-                    inputRef={(el) => (refs.current[todo.id] = el)}
-                    onChange={(e) => {
-                      setTodoVisibility(
-                        todoVisibility.map((t) =>
-                          t.id === todo.id ? { ...t, text: e.target.value } : t
-                        )
-                      );
-                    }}
-                    onBlur={() => handleClickOutside(todo.id)}
-                  />
-                )}
-                <div className="delete-edit-completeBtn">
-                  <Button
-                    variant="delete"
-                    onClick={() => handleDelete(todo.id)}
-                  >
-                    delete
-                  </Button>
-                  <Button variant="edit" onClick={() => handleEdit(todo.id)}>
-                    {todo.readOnly ? "Edit" : "Save"}
-                  </Button>
-                  <Button
-                    variant="complete"
-                    onClick={() => handleCompletedTodo(todo.id)}
-                  >
-                    complete
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="completed-todos">
-            {showCompletedTodo.length >= 1 ? (
-              <h4 style={{ color: "black" }}>
-                Completed Todos ({showCompletedTodo.length})
-              </h4>
-            ) : null}
-            {showCompletedTodo.map((todo) => (
-              <div key={todo.id} className="completedTodo">
-                <List
-                  value={todo.text}
-                  readOnly={todo.readOnly}
-                  className="completed-style"
-                />
+    <>
+      <h1 className="title">To-do-List</h1>
+      <span className="to-do-list">
+        <Input
+          type="text"
+          placeholder="Enter a Task..."
+          className="todoInput"
+          disabled={false}
+          value={inputVisibility}
+          onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleAddTodo();
+            }
+          }}
+        />
+        <Button
+          onClick={handleAddTodo}
+          variant="default"
+          size="medium"
+          type="button"
+          className="add-btn"
+          onMouseEnter={() => {}}
+          onMouseLeave={() => {}}
+        >
+          add
+        </Button>
+      </span>
 
-                <div className="delete-edit-completeBtn">
-                  <Button
-                    variant="delete"
-                    onClick={() => handleDelete(todo.id)}
-                  >
-                    delete
-                  </Button>
-                  <Button variant="edit" onClick={() => handleEdit(todo.id)}>
-                    {todo.readOnly ? "Edit" : "Save"}
-                  </Button>
-                  <Button
-                    variant="complete"
-                    onClick={() => handleUndoTodo(todo.id)}
-                  >
-                    Undo
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+      {pendingTodo.length > 0 ? <h2>Pending {pendingTodo.length}</h2> : null}
+      <ul>
+        {pendingTodo.map((todo) => (
+          <li key={todo.id} className="added-todo-container1">
+            <span className="added-todo">
+              <Input
+                value={todo.text}
+                type="text"
+                onChange={(e) => handleEditChange(e, todo.id)}
+                lefticon={
+                  <Input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => toggleCompleted(todo.id)}
+                  />
+                }
+                disabled={todo.Disabled}
+              />
+
+              <Button
+                onClick={() => handleDelete(todo.id)}
+                variant="destructive"
+                size="medium"
+                type="button"
+              >
+                delete
+              </Button>
+              <Button
+                onClick={() => toggleEdit(todo.id)}
+                variant="secondary"
+                size="medium"
+                type="button"
+              >
+                {todo.Disabled ? "edit" : "save"}
+              </Button>
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {completedTodo.length > 0 ? (
+        <h2>completed {completedTodo.length}</h2>
+      ) : null}
+      {completedTodo.map((todo) => (
+        <li key={todo.id} className="added-todo-container1">
+          <span className="added-todo">
+            <Input
+              value={todo.text}
+              type="text"
+              onChange={(e) => handleEditChange(e, todo.id)}
+              lefticon={
+                <Input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleCompleted(todo.id)}
+                />
+              }
+              disabled={true}
+              style={{ textDecoration: "line-through", color: "grey" }}
+            />
+
+            <Button
+              onClick={() => handleDelete(todo.id)}
+              variant="destructive"
+              size="medium"
+              type="button"
+            >
+              delete
+            </Button>
+            <Button variant="secondary" size="medium" type="button">
+              edit
+            </Button>
+          </span>
+        </li>
+      ))}
+    </>
   );
-}
+};
 
 export default App;
